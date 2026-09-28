@@ -1,6 +1,6 @@
 # Canonical data model
 
-This is a logical schema specification, not a migration or implementation. Its invariants apply to later SQLite schemas and internal command contracts in [Architecture](ARCHITECTURE.md).
+This is the logical contract for the Phase 1 SQLite schema and internal commands. The implemented initial migration covers taxpayer/year references, accounts/ownership, document metadata, balanced journal/postings, evidence links, audit events, idempotency and restore receipts. Entities assigned to later roadmap phases remain design specifications.
 
 ## Shared conventions
 

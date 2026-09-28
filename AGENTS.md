@@ -2,7 +2,7 @@
 
 ## Current authorization boundary
 
-This repository is in Phase 0. Maintain planning documents only until the user reviews the planning and explicitly authorizes implementation. Do not start Phase 1, build a UI, install frameworks, create parsers, or automate IRIS as part of planning maintenance.
+Phase 0 and the accepted Phase 1 canonical-ledger foundation are complete. Maintain that boundary until the user explicitly authorizes Phase 2 and identifies the first bank/product format. Do not start bank-format ingestion, build a UI, install frameworks, implement tax rules or automate IRIS.
 
 Read README.md, docs/DECISIONS.md, and docs/ROADMAP.md before changing scope. Preserve requirement identifiers and cross-document terminology. Update the owning document rather than duplicating its specification.
 
@@ -29,6 +29,6 @@ Read README.md, docs/DECISIONS.md, and docs/ROADMAP.md before changing scope. Pr
 
 Use authoritative primary sources for external claims. Record retrieval date, applicability, limitations, and CONFIRMED / LIKELY / UNKNOWN status. Do not confuse historic API documentation, payment APIs, or sales-tax APIs with current individual income-tax filing access.
 
-For documentation changes, verify links, requirement coverage, financial scenarios, approval boundaries, and contradictions. No application tests or dependency installation are needed for a documentation-only change. Once implementation is authorized, use docs/TESTING_STRATEGY.md and the applicable phase acceptance gate.
+For documentation changes, verify links, requirement coverage, financial scenarios, approval boundaries, and contradictions. For Phase 1 code changes, run the complete standard-library test suite with ResourceWarning promoted to an error, compile the package, and use the Phase 1 acceptance gate in docs/ROADMAP.md. Do not install dependencies merely to satisfy a check.
 
 Do not force-push, rewrite remote history, or include unrelated files. Stop at the authorized phase boundary.

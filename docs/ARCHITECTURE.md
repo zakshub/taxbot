@@ -2,7 +2,7 @@
 
 ## Structure
 
-Planned baseline: Python modular monolith, SQLite local database, private content-addressed document storage, one process/single writer. No frontend, HTTP API, scheduler service, message broker, or ORM decision is needed for Phase 0. Later modules invoke typed internal commands and queries; simple local command-line entry points can support early phases.
+Implemented Phase 1 baseline: Python modular monolith, SQLite local database, private content-addressed document storage, one process/single writer. There is no frontend, HTTP API, scheduler service, message broker, ORM, bank parser, tax engine or filing adapter. Modules invoke typed internal commands and queries; the command line is limited to storage setup, redacted status, backup and restore drills.
 
 ```text
 Local files / optional selected Drive files
@@ -47,7 +47,7 @@ All mutating commands carry stable idempotency keys and expected revisions. Vali
 - Sharing private report values is separate consent from cloud AI. Do not assume redaction makes detailed financial data anonymous.
 - Use narrow per-file OAuth access where feasible. It does not imply access to every existing file in a folder. OAuth setup and provider retention behavior require validation before enabling integration.
 
-Google's [scope guide](https://developers.google.com/workspace/drive/api/guides/api-specific-auth) confirms per-file `drive.file` access. Its [application-data guide](https://developers.google.com/workspace/drive/api/guides/appdata) says app data can be deleted by users or app removal; it is not the sole recovery store. Sources reviewed 2026-09-28. No connector is configured in Phase 0.
+Google's [scope guide](https://developers.google.com/workspace/drive/api/guides/api-specific-auth) confirms per-file `drive.file` access. Its [application-data guide](https://developers.google.com/workspace/drive/api/guides/appdata) says app data can be deleted by users or app removal; it is not the sole recovery store. Sources reviewed 2026-09-28. No connector is configured through Phase 1.
 
 ## Operations and failure isolation
 

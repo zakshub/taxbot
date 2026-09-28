@@ -1,6 +1,6 @@
 # Decision record
 
-Recorded 2026-09-28. Accepted design defaults below authorize documentation, not application implementation. Changes require a dated decision and impact assessment of dependent documents/approvals.
+Recorded 2026-09-28. These defaults do not authorize work beyond the current boundary in AGENTS.md. Changes require a dated decision and impact assessment of dependent documents/approvals.
 
 | ID | Decision | Rationale / consequence |
 |---|---|---|
@@ -22,6 +22,7 @@ Recorded 2026-09-28. Accepted design defaults below authorize documentation, not
 | D16 | Seven-day default transfer candidate window, exact principal matching | Search heuristic only; unusual dates/FX/splits require evidence and review |
 | D17 | Vision merged into requirements; workflows owned by subsystems | Avoid duplicated specifications and keep traceability |
 | D18 | No numerical tax rates or guessed IRIS codes in Phase 0 | Listings and historical docs do not establish executable current rules |
+| D19 | Windows BitLocker is the Phase 1 real-data volume gate | Native status must report fully encrypted with protection on; root must be outside Git/sync folders and a verified restore receipt is required before data commands |
 
 ## Deferred decisions with gates
 

@@ -12,6 +12,8 @@ Acceptance: R01–R23 map to owners/gates; sources and unknowns are dated; links
 
 ### Phase 1 — Canonical financial ledger
 
+Status: **complete; acceptance review passed (2026-09-28).** No real taxpayer data was used.
+
 Implement the local database/domain core using synthetic data: taxpayer/year references, financial and ledger accounts, ownership periods, document metadata/hashes, balanced journal, exact money, provenance, audit/corrections, schema migrations, storage preflight, backup and restore. Provide only minimal local commands needed to exercise the core—no product UI, bank parser or tax rules.
 
 Acceptance: exact arithmetic and foreign-key/invariant tests pass; synthetic opening positions and balanced events work; same-owner transfer can be represented without income/expense; command retries are idempotent; stale revisions are rejected; corrections reverse/supersede rather than mutate; evidence links and audit history survive migration and verified backup restore; real-data mode fails closed until an approved encrypted root is configured; logs reveal no financial payloads.
@@ -70,15 +72,37 @@ Revalidate applicable law, form/mapping, deadlines and integrations; run the pri
 
 Acceptance: current rule/form packages are approved; expected account/evidence coverage is complete; all blocking reviews resolved; private rehearsal reproduces the manifest and read-back; backup restore and migration recovery pass; browser/format drift monitoring and rollback procedures work; submission checklist and manual fallback pass; actual submission still awaits explicit approval.
 
+## Implementation Status
+
+### Phase 1 delivered
+
+- Standard-library Python package and versioned SQLite migration; no runtime framework or third-party dependency.
+- Exact minor-unit money, PKR functional postings, taxpayer/year, financial/ledger accounts and dated ownership records.
+- Atomic balanced journals, optimistic ledger revision, command idempotency, immutable source/document/journal/audit records, evidence links and reversal-plus-replacement corrections.
+- Content-addressed document objects, redacted operational status and explicit synthetic/real storage modes.
+- BitLocker-gated real-data root outside Git/sync paths; restore receipt required before normal real-data access.
+- Consistent SQLite backups with referenced-object hashing, corruption detection and isolated restore drills.
+- Future migrations require a pre-migration backup callback; unknown future schema versions fail closed.
+
+### Phase 1 verification
+
+On Python 3.13.15, 22 standard-library tests pass with `ResourceWarning` promoted to errors. Bytecode compilation and CLI smoke checks pass. Tests cover exact money, journal balance/atomicity, stale revisions, idempotency, immutability, evidence, corrections, ownership limits, internal transfers, income/expense/loan/asset distinctions, FX functional amounts, migration guards, BitLocker/sync-root storage gates, and backup/restore preservation and corruption detection.
+
+### Phase 1 acceptance review
+
+**PASS (2026-09-28).** Every Phase 1 acceptance item is implemented and exercised: exact money and balance invariants; accounts/ownership, evidence hashes and stable IDs; idempotent atomic commands and stale-revision rejection; immutable audit/correction history; semantic transfer/loan/asset examples; versioned migration and backup requirements; isolated verified restore; fail-closed real-data storage; and redacted operational status. No forbidden Phase 2 or later feature was introduced.
+
+No real-data root was provisioned and no real taxpayer data was processed. Phase 2 remains unauthorized. Its first action would require identifying one actual bank/product and choosing a representative format without committing the private statement.
+
 ## Planning Status
 
 ### Planning review outcome
 
-Technical review completed on 2026-09-28: **PASS, ready for an explicit Phase 1 authorization**. The review traced every requested topic to an owning document, walked the mandatory synthetic scenarios, checked external-claim labels and approval boundaries, resolved local Markdown links, and scanned the publication set for implementation files, credentials and taxpayer identifiers.
+Technical review completed on 2026-09-28: **PASS**. It enabled the subsequently authorized Phase 1 implementation. The review traced every requested topic to an owning document, walked the mandatory synthetic scenarios, checked external-claim labels and approval boundaries, resolved local Markdown links, and scanned the publication set for implementation files, credentials and taxpayer identifiers.
 
 No contradiction was found between the ledger, evidence, reconciliation, tax, manifest and filing layers. In particular, journal balance is not treated as statement completeness; a zero wealth residual is not treated as complete evidence; confidence is not treated as verification; withholding observed is not treated as automatically claimable; and manifest approval is not treated as submission approval.
 
-The open questions and external blockers below are correctly placed at later gates. They do not block synthetic Phase 1 work. The Windows encrypted-storage selection must be resolved during Phase 1 before real-data mode can be enabled. No Phase 1 work has started.
+The remaining open questions and external blockers are placed at later gates. Windows BitLocker has since been selected and implemented as the real-data storage gate; actual private-root provisioning and recovery-key custody remain user operational steps before any real data.
 
 ### Completed planning
 
@@ -92,7 +116,7 @@ The open questions and external blockers below are correctly placed at later gat
 
 ### Decisions made
 
-- One resident individual on one Windows PC; Python modular monolith and SQLite baseline.
+- One resident individual on one Windows PC; Python modular monolith and SQLite baseline, now implemented for Phase 1.
 - Balanced journal plus immutable observations and append-only correction/audit history.
 - Local-first processing; cloud AI disabled until opt-in/provider review; initial AI auto-acceptance disabled.
 - File-first bank ingestion; no assumption of usable personal bank or annual-return API.
@@ -104,7 +128,7 @@ The open questions and external blockers below are correctly placed at later gat
 - Which bank/product and first statement format are relevant?
 - Which income, asset, liability, foreign-currency and withholding categories apply privately?
 - Does verified TY2026 closing evidence agree with economic opening positions?
-- Which Windows encryption/credential/backup arrangement satisfies recovery requirements?
+- Where will the BitLocker-protected private root and separately protected backup/recovery key be provisioned?
 - Is a cloud AI provider ever acceptable, and for which minimized data classes?
 
 ### Research still required
@@ -131,9 +155,9 @@ The open questions and external blockers below are correctly placed at later gat
 - Real-data work is blocked until private encrypted storage, keys and restore are verified.
 - Complete filing is blocked by unresolved material legal questions or missing taxpayer evidence, regardless of software progress.
 
-### Recommended first implementation milestone
+### Recommended first implementation milestone — completed
 
-Phase 1: canonical ledger and secure local foundation using synthetic data only. It deliberately excludes UI, bank parsers, tax rules, AI and IRIS automation.
+Phase 1 delivered the canonical ledger and secure local foundation using synthetic data only. It excludes UI, bank parsers, tax rules, AI and IRIS automation.
 
 ### Acceptance criteria for that milestone
 
@@ -144,7 +168,7 @@ Phase 1: canonical ledger and secure local foundation using synthetic data only.
 - Secure-root preflight rejects repository/sync placement and blocks real data until an approved encrypted boundary is configured.
 - Redacted operations expose status/error codes without financial content; no frontend/framework/parsers/IRIS work introduced.
 
-### Recommended implementation order
+### Recommended implementation order — completed
 
 1. Resolve the Phase 1 private-root encryption and recovery decision; write the schema/invariant design against this plan.
 2. Implement exact money, IDs/revisions, taxpayer/year, accounts/ownership and balanced journal.
@@ -152,4 +176,4 @@ Phase 1: canonical ledger and secure local foundation using synthetic data only.
 4. Add migration, consistent backup/restore, storage preflight and redacted operational status.
 5. Complete synthetic scenarios and Phase 1 acceptance review; stop before selecting/building a bank adapter.
 
-The next action is explicit authorization for the bounded Phase 1 milestone above. Publication or technical review alone does not authorize implementation.
+The next action is explicit Phase 2 authorization plus the non-sensitive identity of the first bank/product and available statement format. Phase 2 must not begin from this status update alone.

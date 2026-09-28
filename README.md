@@ -2,7 +2,7 @@
 
 Planning foundation for continuously preparing one resident individual's Pakistan income tax return and Wealth Statement, starting with **Tax Year 2027: 1 July 2026 to 30 June 2027**.
 
-**Status: Phase 0 documentation and technical planning review complete. No application is implemented. Phase 1 is ready for explicit authorization but must not start until that authorization is given.**
+**Status: Phase 0 and the bounded Phase 1 canonical-ledger foundation are complete and acceptance-reviewed. Real-data mode remains fail-closed until a separate BitLocker-protected root and verified restore receipt exist. Do not start Phase 2 until explicitly authorized.**
 
 Taxbot is intended to turn financial evidence into a traceable financial ledger, continuously reconcile wealth, apply independently versioned Pakistan tax rules, and produce an approved Filing Manifest. A later assisted IRIS adapter will enter and verify that manifest. Final submission always requires separate human approval.
 
@@ -21,14 +21,26 @@ Vision is consolidated into product requirements. Workflows live with their owni
 
 ## Operating assumptions
 
-- One taxpayer, one Windows PC; Python and SQLite are the planned baseline, not installed dependencies.
+- One taxpayer, one Windows PC; Python 3.13 and SQLite from the Python standard library are the implemented baseline.
 - The structured ledger is authoritative. Excel and Google Sheets are review/export projections.
 - Local-first processing; cloud AI requires explicit opt-in and minimized disclosure.
 - CSV, Excel, and PDF imports are the baseline. Personal banking APIs and current FBR integration access are not assumed.
 - Real financial data belongs in a separately configured encrypted private store outside this repository.
 - GitHub contains code when later authorized, documentation, public rule references, tests, and intentionally synthetic fixtures only.
 
-No setup or run commands exist yet. Do not install a framework or create application scaffolding to complete Phase 0.
+## Phase 1 commands
+
+No third-party runtime dependencies or framework installation are required.
+
+```powershell
+python -m unittest discover -s tests -v
+python -m taxbot --root C:\path\to\synthetic-store --mode synthetic init
+python -m taxbot --root C:\path\to\synthetic-store --mode synthetic status
+```
+
+Real-data bootstrap is deliberately stricter: create a private directory outside the repository and ordinary sync folders on a fully encrypted BitLocker volume; run `init`, `backup`, and `restore-drill` with `--mode real`; then `status` will open real-data mode only after the restore receipt exists. Keep the BitLocker recovery key separately protected. Do not place real taxpayer data in a synthetic store.
+
+The CLI intentionally exposes only storage setup, redacted status, consistent backup and isolated restore-drill operations. Phase 1 ledger commands are an internal Python API pending product workflow design. No frontend, bank parser, tax calculation, AI, or IRIS automation exists.
 
 ## Research boundaries
 

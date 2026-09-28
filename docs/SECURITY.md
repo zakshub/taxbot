@@ -6,7 +6,7 @@ Threats include accidental Git publication, device/backup loss, cloud disclosure
 
 Place all real-data databases, document objects, staging files, OCR results, AI caches, reports, manifests, browser profiles and diagnostic artifacts under a separately configured encrypted private root outside the repository and outside ordinary sync folders. Restrict filesystem access to the user. Keep application code and deliberately synthetic tests in Git.
 
-Before real-data use, a storage capability check must verify resolved paths, reject repository/sync-root placement, verify the chosen encryption boundary is mounted/configured, and perform a safe recovery test. Until then, run only synthetic data. Choosing and validating the encryption provider is a Phase 1 research gate; do not invent custom cryptography. All scratch/output paths must obey the boundary. Document any unavoidable OS/browser cache exposure before enabling that component.
+Phase 1 selects native Windows BitLocker for encryption at rest. Before real-data use, storage preflight resolves paths, rejects repository and known sync-root placement, queries the native BitLocker status, and requires the volume to be fully encrypted with protection on. It also requires a receipt created by a successful isolated backup restore. Until every check passes, run only synthetic data. Taxbot does not implement custom encryption. All scratch/output paths must obey the boundary. Document any unavoidable OS/browser cache exposure before enabling that component.
 
 ## Secrets and browser state
 
@@ -30,7 +30,7 @@ Operational logs contain opaque IDs/codes/counts, not amounts, account details, 
 
 After changes, create a daily consistent snapshot; also snapshot before migrations and filing approval/submission. Back up the database with a consistent database snapshot mechanism, not by copying a live DB while ignoring its WAL. Include all referenced immutable documents, schema version, configuration needed for recovery, content hashes, rule/mapping versions and audit/filing history.
 
-Encrypt archives before copying off the private volume. Maintain at least one independent offline or otherwise separately protected copy; optional Drive archives are an additional destination, not the only copy. Keep a recovery key outside the device and backup archive in a user-controlled secure location. Validate key recovery without publishing the key. Never sync a live database.
+Phase 1 backups remain inside the verified BitLocker-protected root and contain a consistent SQLite snapshot plus only database-referenced, hash-verified document objects. Before copying an archive off that volume, encrypt it using a separately approved mechanism. Maintain at least one independent offline or otherwise separately protected copy; optional Drive archives are an additional destination, not the only copy. Keep the BitLocker recovery key outside the device and backup archive in a user-controlled secure location. Validate key recovery without publishing the key. Never sync a live database.
 
 Operational targets: at most one day of data loss under daily backup and restoration within one working day; these are design targets until measured. Quarterly and before filing, restore into an isolated encrypted directory, verify hashes and foreign keys, reconcile snapshot totals, and compare a manifest hash. A checksum-only check is not a restore drill.
 
