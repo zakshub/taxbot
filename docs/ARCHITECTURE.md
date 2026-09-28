@@ -39,10 +39,10 @@ SQLite is the operational source of truth, with external document objects refere
 
 All mutating commands carry stable idempotency keys and expected revisions. Validation failure produces no partial canonical change. Errors distinguish bad input, ambiguous facts, unsupported treatment, transient transport failure, and drift. Only safe idempotent transport work may retry automatically with bounded backoff; ambiguities require review.
 
-## Optional Google and spreadsheet adapters
+## Optional Google Drive and spreadsheet adapters
 
-- Drive: import explicitly selected files into the local immutable store; record remote file ID/version and local byte hash. Changed remote content creates a new document revision. A failed/revoked connection does not block local use.
-- Drive backup: upload completed encrypted snapshot archives with manifests/checksums. Never place a live SQLite file, WAL, or unencrypted originals in a synchronized folder. Local/offline backup remains available.
+- Google Drive input: import explicitly selected files into the local immutable store; record remote file ID/version and local byte hash. Changed remote content creates a new document revision. A failed/revoked connection does not block local use.
+- Google Drive backup: upload completed encrypted snapshot archives with manifests/checksums. Never place a live SQLite file, WAL, or unencrypted originals in a synchronized folder. Local/offline backup remains available.
 - Sheets/Excel: export read models with opaque record IDs, ledger revision, export ID, and allowed decision columns. Re-imported edits are proposed commands checked against the base revision and allowed fields. Formulas, altered IDs, stale values, and conflicts do not directly update the ledger. Escape formula-triggering untrusted text in exports.
 - Sharing private report values is separate consent from cloud AI. Do not assume redaction makes detailed financial data anonymous.
 - Use narrow per-file OAuth access where feasible. It does not imply access to every existing file in a folder. OAuth setup and provider retention behavior require validation before enabling integration.

@@ -2,7 +2,7 @@
 
 Planning foundation for continuously preparing one resident individual's Pakistan income tax return and Wealth Statement, starting with **Tax Year 2027: 1 July 2026 to 30 June 2027**.
 
-**Status: Phase 0 documentation complete; planning review pending. No application is implemented. Do not start Phase 1 until the planning has been reviewed and implementation is explicitly requested.**
+**Status: Phase 0 documentation and technical planning review complete. No application is implemented. Phase 1 is ready for explicit authorization but must not start until that authorization is given.**
 
 Taxbot is intended to turn financial evidence into a traceable financial ledger, continuously reconcile wealth, apply independently versioned Pakistan tax rules, and produce an approved Filing Manifest. A later assisted IRIS adapter will enter and verify that manifest. Final submission always requires separate human approval.
 
