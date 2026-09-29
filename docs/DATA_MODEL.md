@@ -1,6 +1,6 @@
 # Canonical data model
 
-This is the logical contract for the Phase 1 SQLite schema and internal commands. The implemented initial migration covers taxpayer/year references, accounts/ownership, document metadata, balanced journal/postings, evidence links, audit events, idempotency and restore receipts. Entities assigned to later roadmap phases remain design specifications.
+This is the logical contract for the SQLite schema and internal commands. The Phase 1 migration covers taxpayer/year references, accounts/ownership, document metadata, balanced journal/postings, evidence links, audit events, idempotency and restore receipts. The Phase 2 checkpoint migration adds import batches/checkpoints, extraction runs, source observations, atomic publication, duplicate candidates and statement coverage. Remaining later-phase entities are still design specifications.
 
 ## Shared conventions
 

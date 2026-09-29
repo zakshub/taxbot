@@ -23,13 +23,14 @@ Recorded 2026-09-28. These defaults do not authorize work beyond the current bou
 | D17 | Vision merged into requirements; workflows owned by subsystems | Avoid duplicated specifications and keep traceability |
 | D18 | No numerical tax rates or guessed IRIS codes in Phase 0 | Listings and historical docs do not establish executable current rules |
 | D19 | Windows BitLocker is the Phase 1 real-data volume gate | Native status must report fully encrypted with protection on; root must be outside Git/sync folders and a verified restore receipt is required before data commands |
+| D20 | Meezan PKR current salaried searchable-PDF statements are the first Phase 2 format target | Authorized 2026-09-29; implement bank-neutral controls first, then create a bank adapter only from the privately observed structure represented by constructed synthetic fixtures; Faysal is a later source |
 
 ## Deferred decisions with gates
 
 | Question | Required evidence / owner | Gate and fallback |
 |---|---|---|
 | Which private storage encryption provider? | Maintainer evaluates Windows compatibility, scratch coverage and recovery; taxpayer controls keys | Before any real-data use; synthetic-only until resolved |
-| Which bank/product and first parser format? | Taxpayer supplies non-sensitive names/format details; maintainer creates synthetic layout fixtures | Before P2; no generic parser claim |
+| What is the exact Meezan searchable-PDF layout/version? | Taxpayer supplies only the structural header/column pattern through a privacy-safe workflow; maintainer constructs an invented fixture | Before claiming Meezan parser support or completing P2; bank-neutral ingestion may proceed, but unknown layouts quarantine |
 | Which income/asset categories actually apply? | Taxpayer private onboarding plus authoritative rule research | Before P7 coverage sign-off; unsupported cases block approval |
 | Is TY2026 baseline complete and consistent? | Filed documents/acknowledgements and account/asset evidence, reviewed privately | Before closing/approval; provisional opening positions remain flagged |
 | Is any cloud AI provider acceptable? | User consent plus provider privacy/retention review | Before enabling cloud; local/manual proposals remain available |

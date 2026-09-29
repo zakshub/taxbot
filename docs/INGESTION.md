@@ -2,7 +2,15 @@
 
 ## Workflow and adapter contract
 
-User selects a file in the private store (or authorizes a selected Drive file); ingest hashes and preserves bytes, detects type, creates a batch, extracts immutable observations, normalizes fields, validates controls, proposes matches, and exposes exceptions before canonical acceptance. No parser is implemented in Phase 0.
+User selects a file in the private store (or authorizes a selected Drive file); ingest hashes and preserves bytes, detects type, creates a batch, extracts immutable observations, normalizes fields, validates controls, proposes matches, and exposes exceptions before canonical acceptance.
+
+## Phase 2 implementation checkpoint (2026-09-29)
+
+The selected first target is a Meezan PKR current salaried account with searchable PDF statements. The schema and internal service now implement immutable extraction runs and observations, durable batch checkpoints, exact PKR controls, quarantine, coverage, duplicate candidates, idempotent commands, and all-or-nothing publication. Publication accepts observations into the canonical evidence layer; it does not create journal entries or classify credits/debits.
+
+The Meezan PDF layout is still **UNKNOWN**. Meezan's public site confirms e-statements and statement download channels but does not document transaction headers, reading order, reference semantics, or control placement. No bank-specific layout was guessed. The current tests construct adapter outputs directly using wholly synthetic data. Completion requires a privacy-safe structural inspection followed by an invented layout fixture and parser drift tests. No real statement may enter the repository.
+
+PDF text extraction remains an adapter boundary. The runtime currently has no bundled extractor, and no dependency has been added without validating the selected PDF. A later choice must preserve page/text-span locators, operate locally, reject scans or corrupt/password-protected inputs safely, and record its name/version/configuration digest.
 
 Adapters accept a document reference, account hint, format/version, locale configuration, and idempotency key. They return observations, source locators, statement metadata, extracted control totals, per-field confidence and diagnostics. They never directly create approved ledger postings. The normalizer retains both raw and normalized values.
 

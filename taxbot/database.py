@@ -125,12 +125,38 @@ class Database:
                     "SELECT COALESCE(MAX(ledger_revision), 0) FROM journal_entries"
                 ).fetchone()[0]
             )
-        if integrity != "ok" or foreign_keys or unbalanced or max_revision > revision:
+            ingestion_errors: list[sqlite3.Row] = []
+            if self._schema_version(connection) >= 2:
+                ingestion_errors = connection.execute(
+                    """
+                    SELECT b.id
+                    FROM import_batches b
+                    LEFT JOIN source_observations o ON o.batch_id = b.id
+                    LEFT JOIN published_observations p
+                        ON p.observation_id = o.id AND p.batch_id = b.id
+                    LEFT JOIN statement_coverage c ON c.batch_id = b.id
+                    GROUP BY b.id, b.state, b.control_status, c.id
+                    HAVING
+                        (b.state = 'accepted' AND (
+                            b.control_status != 'passed' OR c.id IS NULL OR
+                            COUNT(o.id) = 0 OR COUNT(p.observation_id) != COUNT(o.id)
+                        )) OR
+                        (b.state != 'accepted' AND COUNT(p.observation_id) != 0)
+                    """
+                ).fetchall()
+        if (
+            integrity != "ok"
+            or foreign_keys
+            or unbalanced
+            or max_revision > revision
+            or ingestion_errors
+        ):
             raise ValidationError("Database invariant validation failed")
         return {
             "integrity": integrity,
             "foreign_key_errors": len(foreign_keys),
             "unbalanced_journals": len(unbalanced),
+            "ingestion_errors": len(ingestion_errors),
             "ledger_revision": revision,
             "schema_version": self.schema_version(),
         }

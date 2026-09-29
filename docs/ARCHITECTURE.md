@@ -2,7 +2,7 @@
 
 ## Structure
 
-Implemented Phase 1 baseline: Python modular monolith, SQLite local database, private content-addressed document storage, one process/single writer. There is no frontend, HTTP API, scheduler service, message broker, ORM, bank parser, tax engine or filing adapter. Modules invoke typed internal commands and queries; the command line is limited to storage setup, redacted status, backup and restore drills.
+Implemented baseline: Python modular monolith, SQLite local database, private content-addressed document storage, one process/single writer, and the Phase 2 bank-neutral statement staging/publication core. There is no frontend, HTTP API, scheduler service, message broker, ORM, bank-specific parser, tax engine or filing adapter. Modules invoke typed internal commands and queries; the command line is limited to storage setup, redacted status, backup and restore drills.
 
 ```text
 Local files / optional selected Drive files

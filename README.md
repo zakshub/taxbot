@@ -2,7 +2,7 @@
 
 Planning foundation for continuously preparing one resident individual's Pakistan income tax return and Wealth Statement, starting with **Tax Year 2027: 1 July 2026 to 30 June 2027**.
 
-**Status: Phase 0 and the bounded Phase 1 canonical-ledger foundation are complete and acceptance-reviewed. Real-data mode remains fail-closed until a separate BitLocker-protected root and verified restore receipt exist. Do not start Phase 2 until explicitly authorized.**
+**Status: Phase 0 and Phase 1 are complete. Phase 2 is authorized and in progress for a Meezan PKR current salaried account supplied as searchable PDF. The bank-neutral staging/control/publication core is implemented; the Meezan layout adapter remains blocked until the real header/column pattern can be converted into a constructed synthetic fixture. Real-data mode remains fail-closed until a separate BitLocker-protected root and verified restore receipt exist.**
 
 Taxbot is intended to turn financial evidence into a traceable financial ledger, continuously reconcile wealth, apply independently versioned Pakistan tax rules, and produce an approved Filing Manifest. A later assisted IRIS adapter will enter and verify that manifest. Final submission always requires separate human approval.
 
@@ -40,7 +40,7 @@ python -m taxbot --root C:\path\to\synthetic-store --mode synthetic status
 
 Real-data bootstrap is deliberately stricter: create a private directory outside the repository and ordinary sync folders on a fully encrypted BitLocker volume; run `init`, `backup`, and `restore-drill` with `--mode real`; then `status` will open real-data mode only after the restore receipt exists. Keep the BitLocker recovery key separately protected. Do not place real taxpayer data in a synthetic store.
 
-The CLI intentionally exposes only storage setup, redacted status, consistent backup and isolated restore-drill operations. Phase 1 ledger commands are an internal Python API pending product workflow design. No frontend, bank parser, tax calculation, AI, or IRIS automation exists.
+The CLI intentionally exposes only storage setup, redacted status, consistent backup and isolated restore-drill operations. Ledger and statement-ingestion commands remain internal Python APIs pending product workflow design. Phase 2 currently accepts adapter-produced observations only: no Meezan PDF parser, frontend, tax calculation, AI, or IRIS automation exists.
 
 ## Research boundaries
 

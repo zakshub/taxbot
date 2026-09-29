@@ -186,6 +186,148 @@ CREATE TRIGGER immutable_idempotency_delete BEFORE DELETE ON idempotency_records
 BEGIN SELECT RAISE(ABORT, 'idempotency records are immutable'); END;
 """,
     ),
+    (
+        2,
+        "phase2_statement_ingestion_core",
+        r"""
+CREATE TABLE import_batches (
+    id TEXT PRIMARY KEY,
+    document_id TEXT NOT NULL REFERENCES documents(id),
+    financial_account_id TEXT NOT NULL REFERENCES financial_accounts(id),
+    adapter_id TEXT NOT NULL,
+    adapter_version TEXT NOT NULL,
+    extractor_id TEXT NOT NULL,
+    extractor_version TEXT NOT NULL,
+    configuration_digest TEXT NOT NULL CHECK (length(configuration_digest) = 64),
+    run_key TEXT NOT NULL UNIQUE,
+    input_digest TEXT NOT NULL CHECK (length(input_digest) = 64),
+    state TEXT NOT NULL CHECK (state IN (
+        'received', 'quarantined', 'extracting', 'normalized',
+        'validated', 'ready', 'accepted', 'failed'
+    )),
+    statement_start TEXT,
+    statement_end TEXT,
+    currency TEXT,
+    opening_balance_minor INTEGER,
+    closing_balance_minor INTEGER,
+    total_debits_minor INTEGER,
+    total_credits_minor INTEGER,
+    control_status TEXT NOT NULL CHECK (control_status IN ('pending', 'passed', 'failed')),
+    layout_signature TEXT NOT NULL,
+    diagnostic_code TEXT,
+    revision INTEGER NOT NULL CHECK (revision >= 1),
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    CHECK (statement_start IS NULL OR statement_end IS NULL OR statement_start <= statement_end)
+);
+
+CREATE TABLE import_batch_checkpoints (
+    sequence INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT NOT NULL UNIQUE,
+    batch_id TEXT NOT NULL REFERENCES import_batches(id),
+    state TEXT NOT NULL,
+    diagnostic_code TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE extraction_runs (
+    id TEXT PRIMARY KEY,
+    batch_id TEXT NOT NULL REFERENCES import_batches(id),
+    document_id TEXT NOT NULL REFERENCES documents(id),
+    extractor_id TEXT NOT NULL,
+    extractor_version TEXT NOT NULL,
+    configuration_digest TEXT NOT NULL CHECK (length(configuration_digest) = 64),
+    status TEXT NOT NULL CHECK (status IN ('succeeded', 'quarantined', 'failed')),
+    created_at TEXT NOT NULL,
+    UNIQUE(batch_id, extractor_id, extractor_version, configuration_digest)
+);
+
+CREATE TABLE source_observations (
+    id TEXT PRIMARY KEY,
+    batch_id TEXT NOT NULL REFERENCES import_batches(id),
+    extraction_run_id TEXT NOT NULL REFERENCES extraction_runs(id),
+    document_id TEXT NOT NULL REFERENCES documents(id),
+    source_locator TEXT NOT NULL,
+    ordinal INTEGER NOT NULL CHECK (ordinal >= 0),
+    raw_json TEXT NOT NULL,
+    normalized_json TEXT NOT NULL,
+    transaction_date TEXT,
+    value_date TEXT,
+    narration TEXT NOT NULL,
+    bank_reference TEXT,
+    direction TEXT NOT NULL CHECK (direction IN ('debit', 'credit', 'unknown')),
+    amount_minor INTEGER CHECK (amount_minor IS NULL OR amount_minor > 0),
+    running_balance_minor INTEGER,
+    currency TEXT NOT NULL,
+    extraction_confidence TEXT NOT NULL,
+    contextual_fingerprint TEXT NOT NULL CHECK (length(contextual_fingerprint) = 64),
+    created_at TEXT NOT NULL,
+    UNIQUE(extraction_run_id, source_locator, ordinal)
+);
+
+CREATE TABLE published_observations (
+    observation_id TEXT PRIMARY KEY REFERENCES source_observations(id),
+    batch_id TEXT NOT NULL REFERENCES import_batches(id),
+    published_at TEXT NOT NULL
+);
+
+CREATE TABLE duplicate_candidates (
+    id TEXT PRIMARY KEY,
+    left_observation_id TEXT NOT NULL REFERENCES source_observations(id),
+    right_observation_id TEXT NOT NULL REFERENCES source_observations(id),
+    candidate_kind TEXT NOT NULL CHECK (candidate_kind IN ('overlap_fingerprint', 'bank_reference')),
+    reason_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    CHECK (left_observation_id < right_observation_id),
+    UNIQUE(left_observation_id, right_observation_id, candidate_kind)
+);
+
+CREATE TABLE statement_coverage (
+    id TEXT PRIMARY KEY,
+    batch_id TEXT NOT NULL UNIQUE REFERENCES import_batches(id),
+    financial_account_id TEXT NOT NULL REFERENCES financial_accounts(id),
+    period_start TEXT NOT NULL,
+    period_end TEXT NOT NULL,
+    assurance TEXT NOT NULL CHECK (assurance IN ('controlled', 'partial')),
+    created_at TEXT NOT NULL,
+    CHECK (period_start <= period_end)
+);
+
+CREATE INDEX idx_import_batches_account_period
+    ON import_batches(financial_account_id, statement_start, statement_end);
+CREATE INDEX idx_batch_checkpoints_batch ON import_batch_checkpoints(batch_id, sequence);
+CREATE INDEX idx_observations_batch ON source_observations(batch_id, ordinal);
+CREATE INDEX idx_observations_fingerprint ON source_observations(contextual_fingerprint);
+CREATE INDEX idx_published_batch ON published_observations(batch_id);
+CREATE INDEX idx_coverage_account_period
+    ON statement_coverage(financial_account_id, period_start, period_end);
+
+CREATE TRIGGER immutable_batch_checkpoint_update BEFORE UPDATE ON import_batch_checkpoints
+BEGIN SELECT RAISE(ABORT, 'batch checkpoints are immutable'); END;
+CREATE TRIGGER immutable_batch_checkpoint_delete BEFORE DELETE ON import_batch_checkpoints
+BEGIN SELECT RAISE(ABORT, 'batch checkpoints are immutable'); END;
+CREATE TRIGGER immutable_extraction_run_update BEFORE UPDATE ON extraction_runs
+BEGIN SELECT RAISE(ABORT, 'extraction runs are immutable'); END;
+CREATE TRIGGER immutable_extraction_run_delete BEFORE DELETE ON extraction_runs
+BEGIN SELECT RAISE(ABORT, 'extraction runs are immutable'); END;
+CREATE TRIGGER immutable_source_observation_update BEFORE UPDATE ON source_observations
+BEGIN SELECT RAISE(ABORT, 'source observations are immutable'); END;
+CREATE TRIGGER immutable_source_observation_delete BEFORE DELETE ON source_observations
+BEGIN SELECT RAISE(ABORT, 'source observations are immutable'); END;
+CREATE TRIGGER immutable_published_observation_update BEFORE UPDATE ON published_observations
+BEGIN SELECT RAISE(ABORT, 'published observations are immutable'); END;
+CREATE TRIGGER immutable_published_observation_delete BEFORE DELETE ON published_observations
+BEGIN SELECT RAISE(ABORT, 'published observations are immutable'); END;
+CREATE TRIGGER immutable_duplicate_candidate_update BEFORE UPDATE ON duplicate_candidates
+BEGIN SELECT RAISE(ABORT, 'duplicate candidates are immutable'); END;
+CREATE TRIGGER immutable_duplicate_candidate_delete BEFORE DELETE ON duplicate_candidates
+BEGIN SELECT RAISE(ABORT, 'duplicate candidates are immutable'); END;
+CREATE TRIGGER immutable_statement_coverage_update BEFORE UPDATE ON statement_coverage
+BEGIN SELECT RAISE(ABORT, 'statement coverage is immutable'); END;
+CREATE TRIGGER immutable_statement_coverage_delete BEFORE DELETE ON statement_coverage
+BEGIN SELECT RAISE(ABORT, 'statement coverage is immutable'); END;
+""",
+    ),
 )
 
 LATEST_SCHEMA_VERSION = MIGRATIONS[-1][0]

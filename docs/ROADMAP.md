@@ -20,9 +20,13 @@ Acceptance: exact arithmetic and foreign-key/invariant tests pass; synthetic ope
 
 ### Phase 2 — Bank statement ingestion
 
+Status: **in progress (authorized 2026-09-29).** Target: Meezan PKR current salaried account, searchable PDF. Implemented checkpoint: versioned schema, immutable observations/extraction lineage, batch checkpoints, exact controls, quarantine, overlap candidates, coverage and atomic observation publication using synthetic adapter outputs. Remaining gate: verified Meezan structure, local PDF text extractor, bank-specific parser/fixtures and drift/error tests. Phase 3 remains unauthorized.
+
 Select one actual bank/product format based on private portfolio input, then build its adapter against constructed synthetic fixtures. Add staging, normalization, control totals, period coverage, duplicate candidates and resumable atomic publication for CSV/Excel or PDF according to the chosen format.
 
 Acceptance: repeat and overlapping imports create no duplicate postings; legitimate equal transactions survive; reversals and year boundaries are retained; malformed/changed formats quarantine; opening/closing/running controls identify omissions; source locators and parser versions survive reprocessing; interrupted batches recover without partial canonical publication.
+
+Checkpoint verification: 30 standard-library tests pass with `ResourceWarning` promoted to an error. Synthetic adapter-output tests cover idempotent staging/publication, conflicting run identity, overlap candidates without deletion, balance mismatch quarantine, unreadable-field retention, explicit format-drift quarantine, year-boundary/reversal retention, immutable locators/extractor versions, and zero journal creation. Schema upgrades create a consistent pre-migration backup. This does **not** satisfy the complete Phase 2 gate because a local PDF extractor and verified Meezan layout adapter do not yet exist.
 
 ### Phase 3 — Classification and matching
 
@@ -92,7 +96,7 @@ On Python 3.13.15, 22 standard-library tests pass with `ResourceWarning` promote
 
 **PASS (2026-09-28).** Every Phase 1 acceptance item is implemented and exercised: exact money and balance invariants; accounts/ownership, evidence hashes and stable IDs; idempotent atomic commands and stale-revision rejection; immutable audit/correction history; semantic transfer/loan/asset examples; versioned migration and backup requirements; isolated verified restore; fail-closed real-data storage; and redacted operational status. No forbidden Phase 2 or later feature was introduced.
 
-No real-data root was provisioned and no real taxpayer data was processed. Phase 2 remains unauthorized. Its first action would require identifying one actual bank/product and choosing a representative format without committing the private statement.
+No real-data root was provisioned and no real taxpayer data was processed. Phase 2 was subsequently authorized for Meezan PKR current salaried searchable-PDF statements. The bank-neutral ingestion core uses synthetic data only; the exact PDF structure remains an external input and no bank-specific support is claimed yet.
 
 ## Planning Status
 
@@ -125,7 +129,7 @@ The remaining open questions and external blockers are placed at later gates. Wi
 
 ### Open questions
 
-- Which bank/product and first statement format are relevant?
+- What exact headers, columns, page locators and control-total placement occur in the selected Meezan searchable PDF?
 - Which income, asset, liability, foreign-currency and withholding categories apply privately?
 - Does verified TY2026 closing evidence agree with economic opening positions?
 - Where will the BitLocker-protected private root and separately protected backup/recovery key be provisioned?

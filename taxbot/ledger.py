@@ -30,7 +30,7 @@ class LedgerService:
         self.policy = policy
         policy.prepare_directories()
         self.database = Database(policy.database_path)
-        self.database.migrate()
+        self._migrate_with_backup()
         self.documents = DocumentStore(policy.objects_root)
 
     @staticmethod
@@ -38,8 +38,23 @@ class LedgerService:
         """Create an empty schema; real mode still cannot accept data before restore proof."""
         policy.prepare_directories(setup_only=True)
         database = Database(policy.database_path)
-        database.migrate()
+        current = database.schema_version() if policy.database_path.exists() else 0
+        callback = None
+        if current:
+            from .backup import BackupManager
+
+            callback = lambda: BackupManager(policy).create()
+        database.migrate(pre_migration_backup=callback)
         return database.validate_invariants()
+
+    def _migrate_with_backup(self) -> None:
+        current = self.database.schema_version() if self.policy.database_path.exists() else 0
+        callback = None
+        if current:
+            from .backup import BackupManager
+
+            callback = lambda: BackupManager(self.policy).create()
+        self.database.migrate(pre_migration_backup=callback)
 
     @property
     def ledger_revision(self) -> int:
@@ -501,6 +516,22 @@ class LedgerService:
                 "ledger_accounts": connection.execute("SELECT COUNT(*) FROM ledger_accounts").fetchone()[0],
                 "documents": connection.execute("SELECT COUNT(*) FROM documents").fetchone()[0],
                 "journal_entries": connection.execute("SELECT COUNT(*) FROM journal_entries").fetchone()[0],
+                "import_batches": connection.execute("SELECT COUNT(*) FROM import_batches").fetchone()[0],
+                "quarantined_import_batches": connection.execute(
+                    "SELECT COUNT(*) FROM import_batches WHERE state = 'quarantined'"
+                ).fetchone()[0],
+                "ready_import_batches": connection.execute(
+                    "SELECT COUNT(*) FROM import_batches WHERE state = 'ready'"
+                ).fetchone()[0],
+                "accepted_import_batches": connection.execute(
+                    "SELECT COUNT(*) FROM import_batches WHERE state = 'accepted'"
+                ).fetchone()[0],
+                "source_observations": connection.execute(
+                    "SELECT COUNT(*) FROM source_observations"
+                ).fetchone()[0],
+                "duplicate_candidates": connection.execute(
+                    "SELECT COUNT(*) FROM duplicate_candidates"
+                ).fetchone()[0],
                 "audit_events": connection.execute("SELECT COUNT(*) FROM audit_events").fetchone()[0],
             }
         return {**validation, **{key: int(value) for key, value in counts.items()}}
